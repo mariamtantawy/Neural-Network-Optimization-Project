@@ -1,8 +1,12 @@
+from random_search import random
 import numpy as np
 from tensorflow.keras.datasets import cifar10
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.applications import VGG16
 from tensorflow.keras.applications.vgg16 import preprocess_input
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.optimizers import SGD, Adam, RMSprop, Adagrad
 
 def load_and_preprocess_cifar10():
 
@@ -142,4 +146,20 @@ class GeneticOptimizer:
         print("Best Validation Accuracy:", self.best_validation_accuracy)
 
         return self.best_hyperparameters, self.best_validation_accuracy
+    
+if __name__ == "__main__":
+# Load Data
+    X_train, X_val, X_test, y_train, y_val, y_test = load_and_preprocess_cifar10()
+
+    # Limit data size for faster testing (Genetic Algorithms are slow!)
+    X_train_sub, y_train_sub = X_train[:2000], y_train[:2000]
+    X_val_sub, y_val_sub = X_val[:500], y_val[:500]
+
+    # Extract Features
+    train_features = extract_features(X_train_sub)
+    val_features = extract_features(X_val_sub)
+
+    # Run Optimization
+    optimizer = GeneticOptimizer(train_features, y_train_sub, val_features, y_val_sub)
+    best_hp = optimizer.Run() 
 
